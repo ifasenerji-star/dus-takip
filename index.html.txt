@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DUS Takip</title>
+<style>
+body { font-family: Arial; background:#f2f2f2; padding:20px;}
+h1 { text-align:center;}
+.box { background:white; padding:15px; margin-bottom:10px; border-radius:10px;}
+button { padding:10px; margin-top:10px;}
+.progress { height:20px; background:#ddd; border-radius:10px; overflow:hidden;}
+.bar { height:100%; background:#4CAF50; width:0%;}
+</style>
+</head>
+<body>
+
+<h1>DUS MASTER TAKİP</h1>
+
+<div class="box">
+<h3 id="quote"></h3>
+</div>
+
+<div class="box">
+<h3>Günlük Soru Hedefi</h3>
+<input type="number" id="target" placeholder="Hedef">
+<input type="number" id="solved" placeholder="Çözülen">
+<button onclick="updateQuestion()">Güncelle</button>
+<div class="progress"><div class="bar" id="qbar"></div></div>
+<p id="qpercent"></p>
+</div>
+
+<div class="box">
+<h3>Konular</h3>
+<div id="topics"></div>
+<div class="progress"><div class="bar" id="tbar"></div></div>
+<p id="tpercent"></p>
+</div>
+
+<script>
+
+const quotes = [
+"Bugün çalıştığın konu yarınki başarındır.",
+"Disiplin seni DUS'a götürür.",
+"Her soru seni uzmanlığa yaklaştırır.",
+"Vazgeçmeyenler kazanır.",
+"Rakiplerin dinlenirken sen çalış."
+];
+
+document.getElementById("quote").innerText =
+quotes[new Date().getDate() % quotes.length];
+
+const topicList = [
+"Anatomi - Baş Boyun",
+"Anatomi - Nöroanatomi",
+"Fizyoloji",
+"Biyokimya",
+"Mikrobiyoloji",
+"Patoloji",
+"Farmakoloji",
+"Ağız Çene Cerrahisi",
+"Periodontoloji",
+"Protetik",
+"Restoratif",
+"Endodonti",
+"Ortodonti",
+"Pedodonti"
+];
+
+let saved = JSON.parse(localStorage.getItem("dusTopics")) || [];
+
+const container = document.getElementById("topics");
+
+topicList.forEach((t,i)=>{
+let checked = saved.includes(i);
+container.innerHTML +=
+`<div>
+<input type="checkbox" ${checked?"checked":""}
+onclick="toggle(${i})"> ${t}
+</div>`;
+});
+
+function toggle(i){
+if(saved.includes(i)){
+saved = saved.filter(x=>x!=i);
+}else{
+saved.push(i);
+}
+localStorage.setItem("dusTopics",JSON.stringify(saved));
+updateTopicProgress();
+}
+
+function updateTopicProgress(){
+let percent = Math.round((saved.length/topicList.length)*100);
+document.getElementById("tbar").style.width=percent+"%";
+document.getElementById("tpercent").innerText="%"+percent+" tamamlandı";
+}
+
+function updateQuestion(){
+let target = document.getElementById("target").value;
+let solved = document.getElementById("solved").value;
+let percent = Math.min(Math.round((solved/target)*100),100);
+document.getElementById("qbar").style.width=percent+"%";
+document.getElementById("qpercent").innerText="%"+percent+" günlük ilerleme";
+}
+
+updateTopicProgress();
+
+</script>
+
+</body>
+</html>
