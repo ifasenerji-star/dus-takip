@@ -1,112 +1,162 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>DUS Takip</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DUS Master Pro</title>
 <style>
-body { font-family: Arial; background:#f2f2f2; padding:20px;}
-h1 { text-align:center;}
-.box { background:white; padding:15px; margin-bottom:10px; border-radius:10px;}
-button { padding:10px; margin-top:10px;}
-.progress { height:20px; background:#ddd; border-radius:10px; overflow:hidden;}
-.bar { height:100%; background:#4CAF50; width:0%;}
+body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#0f172a;color:white}
+.container{max-width:900px;margin:auto;padding:20px}
+h1{text-align:center}
+.card{background:#1e293b;padding:15px;border-radius:15px;margin-bottom:15px}
+button{padding:8px 12px;border:none;border-radius:8px;cursor:pointer}
+input{padding:8px;border-radius:8px;border:none;margin:5px 0}
+.progress{height:20px;background:#334155;border-radius:10px;overflow:hidden;margin-top:8px}
+.bar{height:100%;background:#22c55e;width:0%}
+.topic{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.small{font-size:14px;opacity:.8}
+.timer{font-size:28px;text-align:center;margin:10px 0}
+@media(max-width:600px){.container{padding:12px}}
 </style>
 </head>
 <body>
+<div class="container">
+<h1>DUS MASTER PRO</h1>
 
-<h1>DUS MASTER TAKİP</h1>
-
-<div class="box">
+<div class="card">
 <h3 id="quote"></h3>
 </div>
 
-<div class="box">
-<h3>Günlük Soru Hedefi</h3>
+<div class="card">
+<h3>📚 Konu Takibi</h3>
+<input id="newTopic" placeholder="Yeni konu ekle">
+<button onclick="addTopic()">Ekle</button>
+<div id="topicList"></div>
+<div class="progress"><div class="bar" id="topicBar"></div></div>
+<p id="topicPercent" class="small"></p>
+</div>
+
+<div class="card">
+<h3>🎯 Günlük Soru Hedefi</h3>
 <input type="number" id="target" placeholder="Hedef">
 <input type="number" id="solved" placeholder="Çözülen">
 <button onclick="updateQuestion()">Güncelle</button>
-<div class="progress"><div class="bar" id="qbar"></div></div>
-<p id="qpercent"></p>
+<div class="progress"><div class="bar" id="questionBar"></div></div>
+<p id="questionPercent" class="small"></p>
 </div>
 
-<div class="box">
-<h3>Konular</h3>
-<div id="topics"></div>
-<div class="progress"><div class="bar" id="tbar"></div></div>
-<p id="tpercent"></p>
+<div class="card">
+<h3>⏱ Pomodoro (25 dk)</h3>
+<div class="timer" id="timer">25:00</div>
+<button onclick="startTimer()">Başlat</button>
+<button onclick="resetTimer()">Sıfırla</button>
+</div>
+
+<div class="card">
+<h3>🕒 Günlük Çalışma Saati</h3>
+<input type="number" id="studyInput" placeholder="Dakika ekle">
+<button onclick="addStudy()">Ekle</button>
+<p id="studyTotal" class="small"></p>
+</div>
+
 </div>
 
 <script>
-
-const quotes = [
-"Bugün çalıştığın konu yarınki başarındır.",
-"Disiplin seni DUS'a götürür.",
-"Her soru seni uzmanlığa yaklaştırır.",
-"Vazgeçmeyenler kazanır.",
-"Rakiplerin dinlenirken sen çalış."
+const quotes=[
+"Bugün disiplin, yarın uzmanlık.",
+"Rakiplerin dinlenirken sen çalış.",
+"Her tekrar seni zirveye taşır.",
+"DUS sabır işidir.",
+"Başarı sistemli çalışanındır."
 ];
+document.getElementById("quote").innerText=
+quotes[new Date().getDate()%quotes.length];
 
-document.getElementById("quote").innerText =
-quotes[new Date().getDate() % quotes.length];
-
-const topicList = [
-"Anatomi - Baş Boyun",
-"Anatomi - Nöroanatomi",
-"Fizyoloji",
-"Biyokimya",
-"Mikrobiyoloji",
-"Patoloji",
-"Farmakoloji",
-"Ağız Çene Cerrahisi",
-"Periodontoloji",
-"Protetik",
-"Restoratif",
-"Endodonti",
-"Ortodonti",
-"Pedodonti"
+let topics=JSON.parse(localStorage.getItem("topics"))||[
+"Anatomi - Baş Boyun","Anatomi - Nöroanatomi","Fizyoloji","Biyokimya","Mikrobiyoloji","Patoloji","Farmakoloji","Ağız Çene Cerrahisi","Periodontoloji","Protetik","Restoratif","Endodonti","Ortodonti","Pedodonti"
 ];
+let completed=JSON.parse(localStorage.getItem("completed"))||[];
 
-let saved = JSON.parse(localStorage.getItem("dusTopics")) || [];
-
-const container = document.getElementById("topics");
-
-topicList.forEach((t,i)=>{
-let checked = saved.includes(i);
-container.innerHTML +=
-`<div>
-<input type="checkbox" ${checked?"checked":""}
-onclick="toggle(${i})"> ${t}
-</div>`;
+function renderTopics(){
+let list=document.getElementById("topicList");
+list.innerHTML="";
+topics.forEach((t,i)=>{
+let div=document.createElement("div");
+div.className="topic";
+div.innerHTML=`<div><input type='checkbox' ${completed.includes(i)?"checked":""} onclick='toggle(${i})'> ${t}</div><button onclick='removeTopic(${i})'>❌</button>`;
+list.appendChild(div);
 });
+updateTopicProgress();
+}
 
 function toggle(i){
-if(saved.includes(i)){
-saved = saved.filter(x=>x!=i);
-}else{
-saved.push(i);
-}
-localStorage.setItem("dusTopics",JSON.stringify(saved));
+if(completed.includes(i)){
+completed=completed.filter(x=>x!=i);
+}else{completed.push(i);} 
+localStorage.setItem("completed",JSON.stringify(completed));
 updateTopicProgress();
+}
+
+function addTopic(){
+let val=document.getElementById("newTopic").value;
+if(!val) return;
+topics.push(val);
+localStorage.setItem("topics",JSON.stringify(topics));
+document.getElementById("newTopic").value="";
+renderTopics();
+}
+
+function removeTopic(i){
+topics.splice(i,1);
+completed=completed.filter(x=>x!=i);
+localStorage.setItem("topics",JSON.stringify(topics));
+localStorage.setItem("completed",JSON.stringify(completed));
+renderTopics();
 }
 
 function updateTopicProgress(){
-let percent = Math.round((saved.length/topicList.length)*100);
-document.getElementById("tbar").style.width=percent+"%";
-document.getElementById("tpercent").innerText="%"+percent+" tamamlandı";
+let percent=Math.round((completed.length/topics.length)*100)||0;
+document.getElementById("topicBar").style.width=percent+"%";
+document.getElementById("topicPercent").innerText="%"+percent+" tamamlandı";
 }
 
 function updateQuestion(){
-let target = document.getElementById("target").value;
-let solved = document.getElementById("solved").value;
-let percent = Math.min(Math.round((solved/target)*100),100);
-document.getElementById("qbar").style.width=percent+"%";
-document.getElementById("qpercent").innerText="%"+percent+" günlük ilerleme";
+let t=document.getElementById("target").value;
+let s=document.getElementById("solved").value;
+let p=Math.min(Math.round((s/t)*100),100)||0;
+document.getElementById("questionBar").style.width=p+"%";
+document.getElementById("questionPercent").innerText="%"+p+" günlük ilerleme";
 }
 
-updateTopicProgress();
+let time=1500;
+let interval;
+function startTimer(){
+clearInterval(interval);
+interval=setInterval(()=>{
+if(time>0){time--;}
+let m=Math.floor(time/60);
+let s=time%60;
+document.getElementById("timer").innerText=
+(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+},1000);
+}
+function resetTimer(){time=1500;clearInterval(interval);document.getElementById("timer").innerText="25:00";}
 
+let study=JSON.parse(localStorage.getItem("study"))||0;
+function addStudy(){
+let val=parseInt(document.getElementById("studyInput").value)||0;
+study+=val;
+localStorage.setItem("study",study);
+document.getElementById("studyInput").value="";
+updateStudy();
+}
+function updateStudy(){
+document.getElementById("studyTotal").innerText="Toplam bugün: "+study+" dakika";
+}
+
+renderTopics();
+updateStudy();
 </script>
 
 </body>
-
 </html>
