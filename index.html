@@ -2,9 +2,11 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Şevval'in DUS Dashboardu</title>
+
+<title>DUS Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -29,7 +31,7 @@ background:var(--bg);
 color:var(--text);
 margin:0;
 padding:15px;
-transition:.3s;
+transition:background .4s,color .4s;
 }
 
 .app{
@@ -47,13 +49,18 @@ background:var(--card);
 border-radius:18px;
 padding:18px;
 margin-bottom:14px;
-box-shadow:0 8px 25px rgba(0,0,0,.08);
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+opacity:0;
+transform:translateY(20px);
+animation:cardIn .6s ease forwards;
 }
 
-.countdown{
-font-size:28px;
-font-weight:600;
-color:#ef4444;
+@keyframes cardIn{
+to{
+opacity:1;
+transform:translateY(0);
+}
 }
 
 button{
@@ -63,11 +70,17 @@ border:none;
 padding:8px 14px;
 border-radius:10px;
 cursor:pointer;
-margin-top:6px;
+transition:.2s;
 }
 
 button:hover{
-opacity:.9;
+transform:scale(1.05);
+}
+
+.countdown{
+font-size:28px;
+font-weight:600;
+color:#ef4444;
 }
 
 .timer{
@@ -86,6 +99,7 @@ overflow:hidden;
 height:100%;
 width:0%;
 background:#22c55e;
+transition:width .6s ease;
 }
 
 textarea{
@@ -96,13 +110,13 @@ border:1px solid #d1d5db;
 padding:6px;
 }
 
-.focus .hideFocus{
-display:none;
-}
-
 .tip{
 font-size:14px;
 opacity:.8;
+}
+
+.focus .hideFocus{
+display:none;
 }
 
 .topButtons{
@@ -120,11 +134,14 @@ margin-bottom:10px;
 <div class="app">
 
 <div class="topButtons">
+
 <button onclick="toggleDark()">🌙</button>
 <button onclick="toggleFocus()">🎯 Focus</button>
+
 </div>
 
 <div class="header">
+
 <h2>🦷 DUS Dashboard</h2>
 
 <p style="font-size:14px">
@@ -137,11 +154,13 @@ DUS yolculuğunda sana eşlik etsin diye hazırlandı.<br><br>
 Her gün biraz daha yaklaşacaksın.
 
 </p>
+
 </div>
 
 <div class="card">
 
 <h3>DUS Geri Sayım</h3>
+
 <div id="countdown" class="countdown"></div>
 
 </div>
@@ -183,7 +202,9 @@ Her gün biraz daha yaklaşacaksın.
 </ul>
 
 <div class="progress-bar">
+
 <div id="progress" class="progress"></div>
+
 </div>
 
 <p id="percent"></p>
@@ -264,6 +285,9 @@ m+":"+(s<10?"0":"")+s
 if(time<=0){
 
 clearInterval(timer)
+
+document.body.style.animation="flash .4s"
+
 alert("Pomodoro tamamlandı")
 
 }
@@ -320,7 +344,7 @@ document.getElementById("percent").innerText=Math.round(percent)+"% tamamlandı"
 
 updateProgress()
 
-/* tips */
+/* dental tips */
 
 const tips=[
 
@@ -401,4 +425,3 @@ document.body.classList.toggle("focus")
 </body>
 </html>
 ```
-
