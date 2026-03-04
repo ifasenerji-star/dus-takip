@@ -3,14 +3,14 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Dr. Şevval – DUS Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DUS Dashboard – Dr. Şevval</title>
 
 <style>
 
 body{
 font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#e8f2ff,#ffffff);
+background:linear-gradient(135deg,#eef4ff,#ffffff);
 margin:0;
 padding:20px;
 text-align:center;
@@ -26,7 +26,7 @@ background:white;
 border-radius:14px;
 padding:25px;
 margin:20px 0;
-box-shadow:0 8px 25px rgba(0,0,0,0.08);
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
 h1{
@@ -61,6 +61,7 @@ padding:0;
 
 li{
 padding:8px;
+text-align:left;
 }
 
 button{
@@ -96,6 +97,7 @@ margin-top:10px;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -105,35 +107,63 @@ margin-top:10px;
 <h1>🦷 Dr. Şevval'in DUS Dashboard</h1>
 
 <div class="card">
+
 <h2>⏳ DUS Geri Sayım</h2>
-<div class="countdown" id="countdown"></div>
+
+<div id="countdown" class="countdown"></div>
+
 </div>
 
 <div class="card">
+
 <h2>🍅 Pomodoro Timer</h2>
-<div class="timer" id="timer">25:00</div>
+
+<div id="timer" class="timer">25:00</div>
+
 <button onclick="startPomodoro()">Başlat</button>
+
 <button onclick="resetPomodoro()">Sıfırla</button>
+
 </div>
 
 <div class="card">
-<h2>📚 Konu Takibi</h2>
+
+<h2>📚 DUS Konu Takibi</h2>
+
+<h3>Temel Bilimler</h3>
 
 <ul id="topics">
 
-<li><input type="checkbox"> Oral Patoloji</li>
-<li><input type="checkbox"> Endodonti</li>
-<li><input type="checkbox"> Periodontoloji</li>
+<li><input type="checkbox"> Anatomi</li>
+<li><input type="checkbox"> Histoloji ve Embriyoloji</li>
+<li><input type="checkbox"> Fizyoloji</li>
+<li><input type="checkbox"> Tıbbi Biyokimya</li>
+<li><input type="checkbox"> Tıbbi Mikrobiyoloji</li>
+<li><input type="checkbox"> Tıbbi Patoloji</li>
+<li><input type="checkbox"> Tıbbi Farmakoloji</li>
+<li><input type="checkbox"> Tıbbi Biyoloji ve Genetik</li>
+
+</ul>
+
+<h3>Klinik Bilimler</h3>
+
+<ul>
+
 <li><input type="checkbox"> Protetik Diş Tedavisi</li>
-<li><input type="checkbox"> Pedodonti</li>
+<li><input type="checkbox"> Restoratif Diş Tedavisi</li>
+<li><input type="checkbox"> Ağız, Diş ve Çene Cerrahisi</li>
+<li><input type="checkbox"> Ağız, Diş ve Çene Radyolojisi</li>
+<li><input type="checkbox"> Periodontoloji</li>
+<li><input type="checkbox"> Endodonti</li>
 <li><input type="checkbox"> Ortodonti</li>
-<li><input type="checkbox"> Ağız Çene Cerrahisi</li>
-<li><input type="checkbox"> Radyoloji</li>
+<li><input type="checkbox"> Çocuk Diş Hekimliği</li>
 
 </ul>
 
 <div class="progress-bar">
+
 <div class="progress" id="progress"></div>
+
 </div>
 
 <p id="percent"></p>
@@ -162,21 +192,40 @@ margin-top:10px;
 
 <script>
 
-const dusDate = new Date("May 15, 2026").getTime()
+/* Geri sayım */
 
-setInterval(function(){
+const examDate = new Date("2026-04-26T10:15:00").getTime()
+
+function updateCountdown(){
 
 const now = new Date().getTime()
 
-const distance = dusDate - now
+const distance = examDate - now
 
 const days = Math.floor(distance/(1000*60*60*24))
+const hours = Math.floor((distance%(1000*60*60*24))/(1000*60*60))
+const minutes = Math.floor((distance%(1000*60*60))/(1000*60))
 
-document.getElementById("countdown").innerHTML = days + " gün"
+if(distance<0){
 
-},1000)
+document.getElementById("countdown").innerHTML="🔥 BUGÜN DUS GÜNÜ 🔥"
 
-let time = 1500
+}else{
+
+document.getElementById("countdown").innerHTML=
+days+" gün "+hours+" saat "+minutes+" dk"
+
+}
+
+}
+
+setInterval(updateCountdown,1000)
+
+updateCountdown()
+
+/* Pomodoro */
+
+let time=1500
 let timer
 
 function startPomodoro(){
@@ -194,6 +243,7 @@ minutes+":"+(seconds<10?"0":"")+seconds
 if(time<=0){
 
 clearInterval(timer)
+
 alert("Pomodoro bitti ☕ mola zamanı")
 
 }
@@ -205,40 +255,30 @@ alert("Pomodoro bitti ☕ mola zamanı")
 function resetPomodoro(){
 
 clearInterval(timer)
+
 time=1500
+
 document.getElementById("timer").innerHTML="25:00"
 
 }
 
-const quotes=[
+/* Konu ilerleme */
 
-"Bugün çalıştığın her saat seni uzmanlığa yaklaştırır",
+const checkboxes=document.querySelectorAll("input[type=checkbox]")
 
-"Rakiplerin şu an uyuyor olabilir",
+checkboxes.forEach((cb,i)=>{
 
-"Biraz sabır + çok soru = DUS kazanılır",
+const saved=localStorage.getItem("topic"+i)
 
-"Kahve + tekrar = başarı",
+if(saved==="true") cb.checked=true
 
-"Pes etmek yok, sadece mola var"
+cb.addEventListener("change",()=>{
 
-]
+localStorage.setItem("topic"+i,cb.checked)
 
-function newQuote(){
+updateProgress()
 
-const random=Math.floor(Math.random()*quotes.length)
-
-document.getElementById("quote").innerText=quotes[random]
-
-}
-
-newQuote()
-
-const checkboxes=document.querySelectorAll("#topics input")
-
-checkboxes.forEach(cb=>{
-
-cb.addEventListener("change",updateProgress)
+})
 
 })
 
@@ -262,6 +302,10 @@ document.getElementById("percent").innerText=Math.round(percent)+"% tamamlandı"
 
 }
 
+updateProgress()
+
+/* Not kaydetme */
+
 const notes=document.getElementById("notes")
 
 notes.value=localStorage.getItem("dusnotes")
@@ -272,9 +316,36 @@ localStorage.setItem("dusnotes",notes.value)
 
 })
 
+/* Motivasyon */
+
+const quotes=[
+
+"Bugün çalıştığın her saat seni uzmanlığa yaklaştırır",
+
+"Rakiplerin şu an uyuyor olabilir",
+
+"Biraz sabır + çok soru = DUS kazanılır",
+
+"Kahve + tekrar = başarı",
+
+"Pes etmek yok, sadece mola var",
+
+"52 gün sonra bambaşka bir hayat başlayabilir"
+
+]
+
+function newQuote(){
+
+const random=Math.floor(Math.random()*quotes.length)
+
+document.getElementById("quote").innerText=quotes[random]
+
+}
+
+newQuote()
+
 </script>
 
 </body>
-
 </html>
 ```
