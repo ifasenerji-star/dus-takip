@@ -1,4 +1,4 @@
-```html
+```html id="dus-modern-v3"
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -6,14 +6,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DUS Dashboard</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
 
+:root{
+--bg:#f8fafc;
+--card:#ffffff;
+--text:#0f172a;
+--accent:#3b82f6;
+}
+
+body.dark{
+--bg:#0f172a;
+--card:#1e293b;
+--text:#f1f5f9;
+}
+
 body{
-font-family:Arial;
-background:linear-gradient(135deg,#eef3ff,#ffffff);
+font-family:Inter,sans-serif;
+background:var(--bg);
+color:var(--text);
 margin:0;
 padding:20px;
-text-align:center;
+transition:0.3s;
 }
 
 .container{
@@ -21,77 +37,80 @@ max-width:900px;
 margin:auto;
 }
 
+h1{
+text-align:center;
+margin-bottom:20px;
+}
+
 .card{
-background:white;
+background:var(--card);
+border-radius:16px;
 padding:20px;
-margin:20px 0;
-border-radius:14px;
-box-shadow:0 8px 25px rgba(0,0,0,0.08);
+margin-bottom:20px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
 .countdown{
-font-size:36px;
-color:#e74c3c;
-font-weight:bold;
+font-size:32px;
+font-weight:600;
+color:#ef4444;
 }
 
 button{
-padding:10px 18px;
+background:var(--accent);
+color:white;
 border:none;
 border-radius:8px;
-background:#3498db;
-color:white;
-font-size:15px;
-cursor:pointer;
+padding:10px 16px;
 margin:5px;
+cursor:pointer;
 }
 
 button:hover{
-background:#2c80c5;
+opacity:0.9;
 }
 
 ul{
 list-style:none;
 padding:0;
-text-align:left;
+}
+
+li{
+margin:6px 0;
 }
 
 .progress-bar{
-width:100%;
-height:20px;
-background:#eee;
+height:18px;
+background:#e5e7eb;
 border-radius:20px;
 overflow:hidden;
 }
 
 .progress{
 height:100%;
-background:#27ae60;
 width:0%;
+background:#22c55e;
 }
 
 textarea{
 width:100%;
-height:90px;
+height:80px;
 border-radius:8px;
-border:1px solid #ccc;
+border:1px solid #d1d5db;
 padding:8px;
 }
 
 .timer{
-font-size:38px;
-margin:10px;
+font-size:28px;
+margin:10px 0;
 }
 
 .quote{
-font-size:17px;
-margin-top:10px;
+font-style:italic;
 }
 
-.streak{
-font-size:18px;
-color:#e67e22;
-font-weight:bold;
+.darkToggle{
+float:right;
 }
 
 </style>
@@ -103,35 +122,44 @@ font-weight:bold;
 
 <h1>🦷 Dr. Şevval'in DUS Dashboard</h1>
 
+<button class="darkToggle" onclick="toggleDark()">🌙</button>
+
 <div class="card">
-<h2>⏳ DUS Geri Sayım</h2>
+
+<h3>DUS Geri Sayım</h3>
+
 <div id="countdown" class="countdown"></div>
+
 </div>
 
 <div class="card">
-<h2>🍅 Pomodoro</h2>
+
+<h3>Pomodoro</h3>
+
 <div id="timer" class="timer">25:00</div>
+
 <button onclick="startPomodoro()">Başlat</button>
 <button onclick="resetPomodoro()">Sıfırla</button>
+
 </div>
 
 <div class="card">
-<h2>📚 Konu Takibi</h2>
+
+<h3>Konu Takibi</h3>
 
 <ul id="topics">
 
 <li><input type="checkbox"> Anatomi</li>
-<li><input type="checkbox"> Histoloji ve Embriyoloji</li>
+<li><input type="checkbox"> Histoloji</li>
 <li><input type="checkbox"> Fizyoloji</li>
-<li><input type="checkbox"> Tıbbi Biyokimya</li>
-<li><input type="checkbox"> Tıbbi Mikrobiyoloji</li>
-<li><input type="checkbox"> Tıbbi Patoloji</li>
-<li><input type="checkbox"> Tıbbi Farmakoloji</li>
-<li><input type="checkbox"> Tıbbi Biyoloji ve Genetik</li>
-
-<li><input type="checkbox"> Protetik Diş Tedavisi</li>
-<li><input type="checkbox"> Restoratif Diş Tedavisi</li>
-<li><input type="checkbox"> Ağız Diş Çene Cerrahisi</li>
+<li><input type="checkbox"> Biyokimya</li>
+<li><input type="checkbox"> Mikrobiyoloji</li>
+<li><input type="checkbox"> Patoloji</li>
+<li><input type="checkbox"> Farmakoloji</li>
+<li><input type="checkbox"> Genetik</li>
+<li><input type="checkbox"> Protetik</li>
+<li><input type="checkbox"> Restoratif</li>
+<li><input type="checkbox"> Cerrahi</li>
 <li><input type="checkbox"> Radyoloji</li>
 <li><input type="checkbox"> Periodontoloji</li>
 <li><input type="checkbox"> Endodonti</li>
@@ -141,7 +169,7 @@ font-weight:bold;
 </ul>
 
 <div class="progress-bar">
-<div class="progress" id="progress"></div>
+<div id="progress" class="progress"></div>
 </div>
 
 <p id="percent"></p>
@@ -149,36 +177,38 @@ font-weight:bold;
 </div>
 
 <div class="card">
-<h2>🎲 Bugün Ne Çalışmalıyım?</h2>
 
-<button onclick="randomTopic()">Öneri Ver</button>
+<h3>Bugünün Çalışma Önerisi</h3>
 
-<p id="studySuggestion"></p>
+<button onclick="suggestStudy()">Öneri</button>
 
-</div>
-
-<div class="card">
-<h2>📝 Günlük Hedef</h2>
-
-<textarea id="notes" placeholder="Bugün kaç soru çözeceksin?"></textarea>
+<p id="suggestion"></p>
 
 </div>
 
 <div class="card">
 
-<h2>🔥 Çalışma Streak</h2>
+<h3>Bugünün Challenge'ı</h3>
 
-<p class="streak" id="streak"></p>
+<p id="challenge"></p>
 
 </div>
 
 <div class="card">
 
-<h2>😂 DUS Motivasyon</h2>
+<h3>Motivasyon</h3>
 
-<p class="quote" id="quote"></p>
+<p id="quote" class="quote"></p>
 
-<button onclick="newQuote()">Motivasyon</button>
+<button onclick="newQuote()">Yeni söz</button>
+
+</div>
+
+<div class="card">
+
+<h3>Günlük Notlar</h3>
+
+<textarea id="notes"></textarea>
 
 </div>
 
@@ -186,49 +216,50 @@ font-weight:bold;
 
 <script>
 
-/* Geri Sayım */
+/* geri sayım */
 
-const examDate = new Date("2026-04-26T10:15:00").getTime()
+const examDate=new Date("2026-04-26T10:15:00").getTime()
 
 function updateCountdown(){
 
-const now = new Date().getTime()
+const now=new Date().getTime()
 
-const distance = examDate - now
+const distance=examDate-now
 
-const days = Math.floor(distance/(1000*60*60*24))
-const hours = Math.floor((distance%(1000*60*60*24))/(1000*60*60))
-const minutes = Math.floor((distance%(1000*60*60))/(1000*60))
+const days=Math.floor(distance/(1000*60*60*24))
+const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60))
+const minutes=Math.floor((distance%(1000*60*60))/(1000*60))
 
-document.getElementById("countdown").innerHTML =
+document.getElementById("countdown").innerHTML=
 days+" gün "+hours+" saat "+minutes+" dk"
 
 }
 
 setInterval(updateCountdown,1000)
+
 updateCountdown()
 
-/* Pomodoro */
+/* pomodoro */
 
 let time=1500
 let timer
 
 function startPomodoro(){
 
-timer=setInterval(function(){
+timer=setInterval(()=>{
 
 time--
 
-let minutes=Math.floor(time/60)
-let seconds=time%60
+let m=Math.floor(time/60)
+let s=time%60
 
-document.getElementById("timer").innerHTML =
-minutes+":"+(seconds<10?"0":"")+seconds
+document.getElementById("timer").innerHTML=
+m+":"+(s<10?"0":"")+s
 
 if(time<=0){
 
 clearInterval(timer)
-alert("Pomodoro bitti ☕")
+alert("Pomodoro tamamlandı")
 
 }
 
@@ -244,7 +275,7 @@ document.getElementById("timer").innerHTML="25:00"
 
 }
 
-/* Konu ilerleme */
+/* konu ilerleme */
 
 const checkboxes=document.querySelectorAll("#topics input")
 
@@ -252,7 +283,7 @@ checkboxes.forEach((cb,i)=>{
 
 const saved=localStorage.getItem("topic"+i)
 
-if(saved==="true") cb.checked=true
+if(saved==="true")cb.checked=true
 
 cb.addEventListener("change",()=>{
 
@@ -272,7 +303,7 @@ let checked=0
 
 checkboxes.forEach(c=>{
 
-if(c.checked) checked++
+if(c.checked)checked++
 
 })
 
@@ -286,74 +317,90 @@ document.getElementById("percent").innerText=Math.round(percent)+"% tamamlandı"
 
 updateProgress()
 
-/* Günlük not */
+/* öneri */
 
-const notes=document.getElementById("notes")
+const studyList=[
 
-notes.value=localStorage.getItem("dusnotes")
+"Endodonti – 60 soru",
 
-notes.addEventListener("input",function(){
+"Ortodonti – konu tekrar",
 
-localStorage.setItem("dusnotes",notes.value)
+"Periodontoloji – 40 soru",
 
-})
+"Anatomi – hızlı tekrar",
 
-/* Çalışma önerisi */
-
-const topics=[
-
-"Endodonti 60 soru",
-"Ortodonti konu tekrar",
-"Anatomi 40 soru",
-"Periodontoloji tekrar",
-"Pedodonti 50 soru",
-"Radyoloji 30 soru"
+"Radyoloji – 30 soru"
 
 ]
 
-function randomTopic(){
+function suggestStudy(){
 
-const random=Math.floor(Math.random()*topics.length)
+const r=Math.floor(Math.random()*studyList.length)
 
-document.getElementById("studySuggestion").innerText=
-topics[random]
+document.getElementById("suggestion").innerText=studyList[r]
 
 }
 
-/* Motivasyon */
+/* challenge */
+
+const challenges=[
+
+"120 soru çöz",
+
+"3 pomodoro tamamla",
+
+"1 konu tekrar et",
+
+"50 soru + hızlı tekrar"
+
+]
+
+document.getElementById("challenge").innerText=
+challenges[Math.floor(Math.random()*challenges.length)]
+
+/* motivasyon */
 
 const quotes=[
 
-"Bugün çalıştığın her saat seni uzmanlığa yaklaştırır",
+"Disiplin motivasyondan güçlüdür",
 
-"Rakiplerin şu an uyuyor olabilir 😄",
+"Küçük ilerlemeler büyük sonuçlar doğurur",
 
-"Biraz sabır + çok soru = DUS",
+"Her gün biraz daha yaklaş",
 
-"Kahve bittiğinde tekrar başlar ☕",
-
-"Pes etmek yok"
+"Odak başarı getirir"
 
 ]
 
 function newQuote(){
 
-const random=Math.floor(Math.random()*quotes.length)
+const r=Math.floor(Math.random()*quotes.length)
 
-document.getElementById("quote").innerText=quotes[random]
+document.getElementById("quote").innerText=quotes[r]
 
 }
 
 newQuote()
 
-/* Streak */
+/* notlar */
 
-let streak=localStorage.getItem("streak")
+const notes=document.getElementById("notes")
 
-if(!streak) streak=1
+notes.value=localStorage.getItem("notes")
 
-document.getElementById("streak").innerText =
-streak+" gün üst üste çalışıyorsun 🔥"
+notes.addEventListener("input",()=>{
+
+localStorage.setItem("notes",notes.value)
+
+})
+
+/* dark mode */
+
+function toggleDark(){
+
+document.body.classList.toggle("dark")
+
+}
 
 </script>
 
