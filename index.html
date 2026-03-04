@@ -3,49 +3,65 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DUS Dashboard – Dr. Şevval</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DUS Dashboard</title>
 
 <style>
 
 body{
-font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#eef4ff,#ffffff);
+font-family:Arial;
+background:linear-gradient(135deg,#eef3ff,#ffffff);
 margin:0;
 padding:20px;
 text-align:center;
 }
 
 .container{
-max-width:1000px;
+max-width:900px;
 margin:auto;
 }
 
 .card{
 background:white;
-border-radius:14px;
-padding:25px;
+padding:20px;
 margin:20px 0;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
-}
-
-h1{
-margin-top:10px;
+border-radius:14px;
+box-shadow:0 8px 25px rgba(0,0,0,0.08);
 }
 
 .countdown{
-font-size:42px;
+font-size:36px;
 color:#e74c3c;
 font-weight:bold;
 }
 
+button{
+padding:10px 18px;
+border:none;
+border-radius:8px;
+background:#3498db;
+color:white;
+font-size:15px;
+cursor:pointer;
+margin:5px;
+}
+
+button:hover{
+background:#2c80c5;
+}
+
+ul{
+list-style:none;
+padding:0;
+text-align:left;
+}
+
 .progress-bar{
 width:100%;
-height:22px;
+height:20px;
 background:#eee;
 border-radius:20px;
 overflow:hidden;
-margin-top:10px;
 }
 
 .progress{
@@ -54,50 +70,31 @@ background:#27ae60;
 width:0%;
 }
 
-ul{
-list-style:none;
-padding:0;
-}
-
-li{
-padding:8px;
-text-align:left;
-}
-
-button{
-padding:12px 20px;
-border:none;
+textarea{
+width:100%;
+height:90px;
 border-radius:8px;
-background:#3498db;
-color:white;
-font-size:16px;
-cursor:pointer;
-}
-
-button:hover{
-background:#2c80c5;
+border:1px solid #ccc;
+padding:8px;
 }
 
 .timer{
-font-size:40px;
+font-size:38px;
 margin:10px;
 }
 
-textarea{
-width:100%;
-height:100px;
-padding:10px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-
 .quote{
-font-size:18px;
+font-size:17px;
 margin-top:10px;
 }
 
-</style>
+.streak{
+font-size:18px;
+color:#e67e22;
+font-weight:bold;
+}
 
+</style>
 </head>
 
 <body>
@@ -107,30 +104,19 @@ margin-top:10px;
 <h1>🦷 Dr. Şevval'in DUS Dashboard</h1>
 
 <div class="card">
-
 <h2>⏳ DUS Geri Sayım</h2>
-
 <div id="countdown" class="countdown"></div>
-
 </div>
 
 <div class="card">
-
-<h2>🍅 Pomodoro Timer</h2>
-
+<h2>🍅 Pomodoro</h2>
 <div id="timer" class="timer">25:00</div>
-
 <button onclick="startPomodoro()">Başlat</button>
-
 <button onclick="resetPomodoro()">Sıfırla</button>
-
 </div>
 
 <div class="card">
-
-<h2>📚 DUS Konu Takibi</h2>
-
-<h3>Temel Bilimler</h3>
+<h2>📚 Konu Takibi</h2>
 
 <ul id="topics">
 
@@ -143,27 +129,19 @@ margin-top:10px;
 <li><input type="checkbox"> Tıbbi Farmakoloji</li>
 <li><input type="checkbox"> Tıbbi Biyoloji ve Genetik</li>
 
-</ul>
-
-<h3>Klinik Bilimler</h3>
-
-<ul>
-
 <li><input type="checkbox"> Protetik Diş Tedavisi</li>
 <li><input type="checkbox"> Restoratif Diş Tedavisi</li>
-<li><input type="checkbox"> Ağız, Diş ve Çene Cerrahisi</li>
-<li><input type="checkbox"> Ağız, Diş ve Çene Radyolojisi</li>
+<li><input type="checkbox"> Ağız Diş Çene Cerrahisi</li>
+<li><input type="checkbox"> Radyoloji</li>
 <li><input type="checkbox"> Periodontoloji</li>
 <li><input type="checkbox"> Endodonti</li>
 <li><input type="checkbox"> Ortodonti</li>
-<li><input type="checkbox"> Çocuk Diş Hekimliği</li>
+<li><input type="checkbox"> Pedodonti</li>
 
 </ul>
 
 <div class="progress-bar">
-
 <div class="progress" id="progress"></div>
-
 </div>
 
 <p id="percent"></p>
@@ -171,8 +149,16 @@ margin-top:10px;
 </div>
 
 <div class="card">
+<h2>🎲 Bugün Ne Çalışmalıyım?</h2>
 
-<h2>📝 Günlük Hedefler</h2>
+<button onclick="randomTopic()">Öneri Ver</button>
+
+<p id="studySuggestion"></p>
+
+</div>
+
+<div class="card">
+<h2>📝 Günlük Hedef</h2>
 
 <textarea id="notes" placeholder="Bugün kaç soru çözeceksin?"></textarea>
 
@@ -180,11 +166,19 @@ margin-top:10px;
 
 <div class="card">
 
-<h2>💬 Motivasyon</h2>
+<h2>🔥 Çalışma Streak</h2>
+
+<p class="streak" id="streak"></p>
+
+</div>
+
+<div class="card">
+
+<h2>😂 DUS Motivasyon</h2>
 
 <p class="quote" id="quote"></p>
 
-<button onclick="newQuote()">Yeni Motivasyon</button>
+<button onclick="newQuote()">Motivasyon</button>
 
 </div>
 
@@ -192,7 +186,7 @@ margin-top:10px;
 
 <script>
 
-/* Geri sayım */
+/* Geri Sayım */
 
 const examDate = new Date("2026-04-26T10:15:00").getTime()
 
@@ -206,21 +200,12 @@ const days = Math.floor(distance/(1000*60*60*24))
 const hours = Math.floor((distance%(1000*60*60*24))/(1000*60*60))
 const minutes = Math.floor((distance%(1000*60*60))/(1000*60))
 
-if(distance<0){
-
-document.getElementById("countdown").innerHTML="🔥 BUGÜN DUS GÜNÜ 🔥"
-
-}else{
-
-document.getElementById("countdown").innerHTML=
+document.getElementById("countdown").innerHTML =
 days+" gün "+hours+" saat "+minutes+" dk"
 
 }
 
-}
-
 setInterval(updateCountdown,1000)
-
 updateCountdown()
 
 /* Pomodoro */
@@ -237,14 +222,13 @@ time--
 let minutes=Math.floor(time/60)
 let seconds=time%60
 
-document.getElementById("timer").innerHTML=
+document.getElementById("timer").innerHTML =
 minutes+":"+(seconds<10?"0":"")+seconds
 
 if(time<=0){
 
 clearInterval(timer)
-
-alert("Pomodoro bitti ☕ mola zamanı")
+alert("Pomodoro bitti ☕")
 
 }
 
@@ -255,16 +239,14 @@ alert("Pomodoro bitti ☕ mola zamanı")
 function resetPomodoro(){
 
 clearInterval(timer)
-
 time=1500
-
 document.getElementById("timer").innerHTML="25:00"
 
 }
 
 /* Konu ilerleme */
 
-const checkboxes=document.querySelectorAll("input[type=checkbox]")
+const checkboxes=document.querySelectorAll("#topics input")
 
 checkboxes.forEach((cb,i)=>{
 
@@ -304,7 +286,7 @@ document.getElementById("percent").innerText=Math.round(percent)+"% tamamlandı"
 
 updateProgress()
 
-/* Not kaydetme */
+/* Günlük not */
 
 const notes=document.getElementById("notes")
 
@@ -316,21 +298,41 @@ localStorage.setItem("dusnotes",notes.value)
 
 })
 
+/* Çalışma önerisi */
+
+const topics=[
+
+"Endodonti 60 soru",
+"Ortodonti konu tekrar",
+"Anatomi 40 soru",
+"Periodontoloji tekrar",
+"Pedodonti 50 soru",
+"Radyoloji 30 soru"
+
+]
+
+function randomTopic(){
+
+const random=Math.floor(Math.random()*topics.length)
+
+document.getElementById("studySuggestion").innerText=
+topics[random]
+
+}
+
 /* Motivasyon */
 
 const quotes=[
 
 "Bugün çalıştığın her saat seni uzmanlığa yaklaştırır",
 
-"Rakiplerin şu an uyuyor olabilir",
+"Rakiplerin şu an uyuyor olabilir 😄",
 
-"Biraz sabır + çok soru = DUS kazanılır",
+"Biraz sabır + çok soru = DUS",
 
-"Kahve + tekrar = başarı",
+"Kahve bittiğinde tekrar başlar ☕",
 
-"Pes etmek yok, sadece mola var",
-
-"52 gün sonra bambaşka bir hayat başlayabilir"
+"Pes etmek yok"
 
 ]
 
@@ -343,6 +345,15 @@ document.getElementById("quote").innerText=quotes[random]
 }
 
 newQuote()
+
+/* Streak */
+
+let streak=localStorage.getItem("streak")
+
+if(!streak) streak=1
+
+document.getElementById("streak").innerText =
+streak+" gün üst üste çalışıyorsun 🔥"
 
 </script>
 
