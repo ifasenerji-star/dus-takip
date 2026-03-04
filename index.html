@@ -1,4 +1,4 @@
-```html id="dus-modern-v3"
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -11,15 +11,15 @@
 <style>
 
 :root{
---bg:#f8fafc;
+--bg:#f1f5f9;
 --card:#ffffff;
 --text:#0f172a;
 --accent:#3b82f6;
 }
 
 body.dark{
---bg:#0f172a;
---card:#1e293b;
+--bg:#020617;
+--card:#0f172a;
 --text:#f1f5f9;
 }
 
@@ -28,30 +28,30 @@ font-family:Inter,sans-serif;
 background:var(--bg);
 color:var(--text);
 margin:0;
-padding:20px;
-transition:0.3s;
+padding:15px;
+transition:.3s;
 }
 
-.container{
-max-width:900px;
+.app{
+max-width:480px;
 margin:auto;
 }
 
-h1{
+.header{
 text-align:center;
-margin-bottom:20px;
+margin-bottom:15px;
 }
 
 .card{
 background:var(--card);
-border-radius:16px;
-padding:20px;
-margin-bottom:20px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
+border-radius:18px;
+padding:18px;
+margin-bottom:14px;
+box-shadow:0 8px 25px rgba(0,0,0,.08);
 }
 
 .countdown{
-font-size:32px;
+font-size:28px;
 font-weight:600;
 color:#ef4444;
 }
@@ -60,27 +60,23 @@ button{
 background:var(--accent);
 color:white;
 border:none;
-border-radius:8px;
-padding:10px 16px;
-margin:5px;
+padding:8px 14px;
+border-radius:10px;
 cursor:pointer;
+margin-top:6px;
 }
 
 button:hover{
-opacity:0.9;
+opacity:.9;
 }
 
-ul{
-list-style:none;
-padding:0;
-}
-
-li{
-margin:6px 0;
+.timer{
+font-size:26px;
+margin:8px 0;
 }
 
 .progress-bar{
-height:18px;
+height:16px;
 background:#e5e7eb;
 border-radius:20px;
 overflow:hidden;
@@ -94,45 +90,63 @@ background:#22c55e;
 
 textarea{
 width:100%;
-height:80px;
-border-radius:8px;
+height:70px;
+border-radius:10px;
 border:1px solid #d1d5db;
-padding:8px;
+padding:6px;
 }
 
-.timer{
-font-size:28px;
-margin:10px 0;
+.focus .hideFocus{
+display:none;
 }
 
-.quote{
-font-style:italic;
+.tip{
+font-size:14px;
+opacity:.8;
 }
 
-.darkToggle{
-float:right;
+.topButtons{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
-<h1>🦷 Dr. Şevval'in DUS Dashboard</h1>
+<div class="topButtons">
+<button onclick="toggleDark()">🌙</button>
+<button onclick="toggleFocus()">🎯 Focus</button>
+</div>
 
-<button class="darkToggle" onclick="toggleDark()">🌙</button>
+<div class="header">
+<h2>🦷 DUS Dashboard</h2>
+
+<p style="font-size:14px">
+
+Şevval,<br><br>
+
+Bu küçük dashboard<br>
+DUS yolculuğunda sana eşlik etsin diye hazırlandı.<br><br>
+
+Her gün biraz daha yaklaşacaksın.
+
+</p>
+</div>
 
 <div class="card">
 
 <h3>DUS Geri Sayım</h3>
-
 <div id="countdown" class="countdown"></div>
 
 </div>
 
-<div class="card">
+<div class="card hideFocus">
 
 <h3>Pomodoro</h3>
 
@@ -143,7 +157,7 @@ float:right;
 
 </div>
 
-<div class="card">
+<div class="card hideFocus">
 
 <h3>Konu Takibi</h3>
 
@@ -176,37 +190,29 @@ float:right;
 
 </div>
 
-<div class="card">
+<div class="card hideFocus">
 
-<h3>Bugünün Çalışma Önerisi</h3>
+<h3>🦷 Günün Dental Tip'i</h3>
 
-<button onclick="suggestStudy()">Öneri</button>
+<p id="tip" class="tip"></p>
 
-<p id="suggestion"></p>
-
-</div>
-
-<div class="card">
-
-<h3>Bugünün Challenge'ı</h3>
-
-<p id="challenge"></p>
+<button onclick="newTip()">Yeni Tip</button>
 
 </div>
 
-<div class="card">
+<div class="card hideFocus">
 
-<h3>Motivasyon</h3>
+<h3>💬 Motivasyon</h3>
 
-<p id="quote" class="quote"></p>
+<p id="quote"></p>
 
 <button onclick="newQuote()">Yeni söz</button>
 
 </div>
 
-<div class="card">
+<div class="card hideFocus">
 
-<h3>Günlük Notlar</h3>
+<h3>Notlar</h3>
 
 <textarea id="notes"></textarea>
 
@@ -216,7 +222,7 @@ float:right;
 
 <script>
 
-/* geri sayım */
+/* countdown */
 
 const examDate=new Date("2026-04-26T10:15:00").getTime()
 
@@ -236,7 +242,6 @@ days+" gün "+hours+" saat "+minutes+" dk"
 }
 
 setInterval(updateCountdown,1000)
-
 updateCountdown()
 
 /* pomodoro */
@@ -275,7 +280,7 @@ document.getElementById("timer").innerHTML="25:00"
 
 }
 
-/* konu ilerleme */
+/* topics */
 
 const checkboxes=document.querySelectorAll("#topics input")
 
@@ -297,8 +302,6 @@ updateProgress()
 
 function updateProgress(){
 
-const total=checkboxes.length
-
 let checked=0
 
 checkboxes.forEach(c=>{
@@ -307,7 +310,7 @@ if(c.checked)checked++
 
 })
 
-let percent=(checked/total)*100
+let percent=(checked/checkboxes.length)*100
 
 document.getElementById("progress").style.width=percent+"%"
 
@@ -317,58 +320,41 @@ document.getElementById("percent").innerText=Math.round(percent)+"% tamamlandı"
 
 updateProgress()
 
-/* öneri */
+/* tips */
 
-const studyList=[
+const tips=[
 
-"Endodonti – 60 soru",
+"Periodontal ligament ortalama 0.2 mm kalınlığındadır.",
 
-"Ortodonti – konu tekrar",
+"En sık pulpa nekrozu nedeni derin çürüktür.",
 
-"Periodontoloji – 40 soru",
+"Mandibular molarların çoğunda iki kök bulunur.",
 
-"Anatomi – hızlı tekrar",
-
-"Radyoloji – 30 soru"
+"Ortodontik kuvvetler hafif ve sürekli olmalıdır."
 
 ]
 
-function suggestStudy(){
+function newTip(){
 
-const r=Math.floor(Math.random()*studyList.length)
+const r=Math.floor(Math.random()*tips.length)
 
-document.getElementById("suggestion").innerText=studyList[r]
+document.getElementById("tip").innerText=tips[r]
 
 }
 
-/* challenge */
+newTip()
 
-const challenges=[
-
-"120 soru çöz",
-
-"3 pomodoro tamamla",
-
-"1 konu tekrar et",
-
-"50 soru + hızlı tekrar"
-
-]
-
-document.getElementById("challenge").innerText=
-challenges[Math.floor(Math.random()*challenges.length)]
-
-/* motivasyon */
+/* quotes */
 
 const quotes=[
 
-"Disiplin motivasyondan güçlüdür",
+"Disiplin motivasyondan güçlüdür.",
 
-"Küçük ilerlemeler büyük sonuçlar doğurur",
+"Küçük ilerlemeler büyük başarılar getirir.",
 
-"Her gün biraz daha yaklaş",
+"Her gün biraz daha yaklaş.",
 
-"Odak başarı getirir"
+"Odak başarı getirir."
 
 ]
 
@@ -382,7 +368,7 @@ document.getElementById("quote").innerText=quotes[r]
 
 newQuote()
 
-/* notlar */
+/* notes */
 
 const notes=document.getElementById("notes")
 
@@ -399,6 +385,14 @@ localStorage.setItem("notes",notes.value)
 function toggleDark(){
 
 document.body.classList.toggle("dark")
+
+}
+
+/* focus mode */
+
+function toggleFocus(){
+
+document.body.classList.toggle("focus")
 
 }
 
